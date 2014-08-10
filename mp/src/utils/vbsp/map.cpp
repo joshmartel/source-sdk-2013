@@ -2239,7 +2239,7 @@ void CMapFile::MergeBrushSides( entity_t *pInstanceEntity, CMapFile *Instance, V
 
 			if ( !onlyents )
 			{
-				side->texinfo = TexinfoForBrushTexture ( &mapplanes[ side->planenum ], &bt, vec3_origin );
+				side->texinfo = TexinfoForBrushTexture ( &mapplanes[ side->planenum ], &bt, pInstanceEntity->origin );
 			}
 		}
 
