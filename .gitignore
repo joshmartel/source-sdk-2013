@@ -62,3 +62,7 @@ mp/game/mod_hl2mp/materials/vgui/logos/spray.vtf
 mp/game/mod_hl2mp/stats.txt
 mp/game/mod_hl2mp/user_custom/**
 mp/game/mod_hl2mp/voice_ban.dt
+
+*.filters
+*.vpc_crc
+
