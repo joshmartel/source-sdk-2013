@@ -1,3 +1,20 @@
+# My notes on why this fork exists.
+
+I created this clone of the Source SDK years ago so that I could share one commit: 7c61562eb6e1dd1a4fd2a3c4baeadce6e35901b0
+
+I was doing offline procedural map generation in the source engine. I wrote a tool (not available here) that would use rules to piece together collections of smaller maps (rooms and hallways). The resulting map contained only a bunch of func_instance entities (instances of other maps). The instance map that the tool spit out would then be compiled normally.
+
+I discovered a bug in vbsp that was thwarting my goal of generating HUGE maps. I wanted to generate maps that spanned the entire  possible map space.
+
+The tool would calculate stats on each instance to estimate how many could fit in one map, but the results were always turning up wrong. If I flattened the instances into a non-instanced map, compiled that, and then compared it to the compiled map that contained only instances, the results were different. That was surprising because the compile process of a func_instance does exactly the same operation. I spent some time stepping through a compile and verifying each step to find the problem. It turned out there was a bug that prevented func_instance geometry from merging correctly. The instanced brushes' texinfos were built without the func_instance's origin as an offset. To the CSG routines, neighboring brushes could never merge because their textures were always incongruous, even if they actually weren't. 
+
+The overall effect was that two identical instances of the same single brush, when next to eachother but in different func_instances, would never merge. Walls, ceilings, and floors would remain as separate brushes instead of merging together into a single brush. It severely limited how many instances could fit in a map because it would, for example, hit the brush limits very quickly.
+
+My one-line fix, in the previously mentioned commit, fixes that. After this, I was able to cram a stupid number of instances into the final maps.
+
+
+# Original README
+
                SOURCE 1 SDK LICENSE
 
 Source SDK Copyright(c) Valve Corp.  
@@ -6,7 +23,7 @@ THIS DOCUMENT DESCRIBES A CONTRACT BETWEEN YOU AND VALVE
 CORPORATION ("Valve").  PLEASE READ IT BEFORE DOWNLOADING OR USING 
 THE SOURCE ENGINE SDK ("SDK"). BY DOWNLOADING AND/OR USING THE 
 SOURCE ENGINE SDK YOU ACCEPT THIS LICENSE. IF YOU DO NOT AGREE TO 
-THE TERMS OF THIS LICENSE PLEASE DON’T DOWNLOAD OR USE THE SDK.  
+THE TERMS OF THIS LICENSE PLEASE DONâ€™T DOWNLOAD OR USE THE SDK.  
 
   You may, free of charge, download and use the SDK to develop a modified Valve game 
 running on the Source engine.  You may distribute your modified Valve game in source and 
